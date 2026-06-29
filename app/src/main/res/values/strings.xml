@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FocusLock</string>
+    <string name="accessibility_description">FocusLock monitors which app is in the foreground. When a focus session is active, it shows a PIN screen whenever you open a blocked app, preventing distracted use.</string>
+</resources>
