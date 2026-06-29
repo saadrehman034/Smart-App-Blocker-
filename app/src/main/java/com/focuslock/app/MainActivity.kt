@@ -223,9 +223,16 @@ class MainActivity : Activity() {
 
     private fun loadUserApps(): List<Pair<String, String>> {
         val pm = packageManager
+        // Include all launchable apps (user + system) so Chrome, Play Store, Settings etc. appear
+        val launchable = pm.queryIntentActivities(
+            android.content.Intent(android.content.Intent.ACTION_MAIN).also {
+                it.addCategory(android.content.Intent.CATEGORY_LAUNCHER)
+            }, 0
+        ).map { it.activityInfo.packageName }.toSet()
+
         return pm.getInstalledApplications(PackageManager.GET_META_DATA)
-            .filter { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 }
             .filter { it.packageName != packageName }
+            .filter { launchable.contains(it.packageName) }
             .map { Pair(pm.getApplicationLabel(it).toString(), it.packageName) }
             .sortedBy { it.first.lowercase() }
     }
