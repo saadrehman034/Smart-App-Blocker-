@@ -11,7 +11,8 @@
         android:allowBackup="false"
         android:label="FocusLock"
         android:theme="@style/Theme.AppCompat.Light"
-        android:icon="@android:drawable/ic_lock_idle_lock">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
 
         <!-- Main launcher activity — requires PIN on every open -->
         <activity

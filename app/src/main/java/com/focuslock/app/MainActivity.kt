@@ -223,18 +223,20 @@ class MainActivity : Activity() {
 
     private fun loadUserApps(): List<Pair<String, String>> {
         val pm = packageManager
-        // Include all launchable apps (user + system) so Chrome, Play Store, Settings etc. appear
-        val launchable = pm.queryIntentActivities(
-            android.content.Intent(android.content.Intent.ACTION_MAIN).also {
-                it.addCategory(android.content.Intent.CATEGORY_LAUNCHER)
-            }, 0
-        ).map { it.activityInfo.packageName }.toSet()
-
-        return pm.getInstalledApplications(PackageManager.GET_META_DATA)
-            .filter { it.packageName != packageName }
-            .filter { launchable.contains(it.packageName) }
-            .map { Pair(pm.getApplicationLabel(it).toString(), it.packageName) }
-            .sortedBy { it.first.lowercase() }
+        // Fixed list of blockable apps — candidates listed per app in case package name varies by device
+        val candidates = listOf(
+            "Settings"   to listOf("com.android.settings"),
+            "Google"     to listOf("com.google.android.googlequicksearchbox", "com.google.android.gms"),
+            "Chrome"     to listOf("com.android.chrome", "com.samsung.android.chrome", "com.sec.android.app.sbrowser"),
+            "Play Store" to listOf("com.android.vending"),
+            "Facebook"   to listOf("com.facebook.katana", "com.facebook.lite")
+        )
+        return candidates.mapNotNull { (label, packages) ->
+            val installed = packages.firstOrNull { pkg ->
+                try { pm.getPackageInfo(pkg, 0); true } catch (_: PackageManager.NameNotFoundException) { false }
+            }
+            installed?.let { Pair(label, it) }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
