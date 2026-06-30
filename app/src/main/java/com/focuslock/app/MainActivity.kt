@@ -24,6 +24,14 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Start lock immediately on tap — before PIN dialog
+        startForegroundService(Intent(this, LockForegroundService::class.java))
+        if (!SessionManager.isSessionActive(this)) {
+            sendBroadcast(Intent(LockForegroundService.ACTION_START_LOCK).apply {
+                `package` = packageName
+            })
+        }
+
         if (!PinManager.isPinSet(this)) {
             showPinSetupDialog()
         } else {
@@ -90,15 +98,6 @@ class MainActivity : Activity() {
 
     private fun proceedToMain() {
         isAuthenticated = true
-        // Start persistent foreground service
-        startForegroundService(Intent(this, LockForegroundService::class.java))
-
-        // Auto-start 1hr lock session on every app open (if not already active)
-        if (!SessionManager.isSessionActive(this)) {
-            sendBroadcast(Intent(LockForegroundService.ACTION_START_LOCK).apply {
-                `package` = packageName
-            })
-        }
 
         // Request POST_NOTIFICATIONS (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
