@@ -223,20 +223,21 @@ class MainActivity : Activity() {
 
     private fun loadUserApps(): List<Pair<String, String>> {
         val pm = packageManager
-        // Fixed list of blockable apps — candidates listed per app in case package name varies by device
-        val candidates = listOf(
-            "Settings"   to listOf("com.android.settings"),
-            "Google"     to listOf("com.google.android.googlequicksearchbox", "com.google.android.gms"),
-            "Chrome"     to listOf("com.android.chrome", "com.samsung.android.chrome", "com.sec.android.app.sbrowser"),
-            "Play Store" to listOf("com.android.vending"),
-            "Facebook"   to listOf("com.facebook.katana", "com.facebook.lite")
-        )
-        return candidates.mapNotNull { (label, packages) ->
-            val installed = packages.firstOrNull { pkg ->
-                try { pm.getPackageInfo(pkg, 0); true } catch (_: PackageManager.NameNotFoundException) { false }
-            }
-            installed?.let { Pair(label, it) }
+        val intent = android.content.Intent(android.content.Intent.ACTION_MAIN).apply {
+            addCategory(android.content.Intent.CATEGORY_LAUNCHER)
         }
+        @Suppress("DEPRECATION")
+        return pm.queryIntentActivities(intent, 0)
+            .map { it.activityInfo.packageName }
+            .distinct()
+            .filter { it != packageName }
+            .mapNotNull { pkg ->
+                try {
+                    val info = pm.getApplicationInfo(pkg, 0)
+                    Pair(pm.getApplicationLabel(info).toString(), pkg)
+                } catch (_: PackageManager.NameNotFoundException) { null }
+            }
+            .sortedBy { it.first.lowercase() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
