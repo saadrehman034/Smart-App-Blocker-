@@ -93,6 +93,13 @@ class MainActivity : Activity() {
         // Start persistent foreground service
         startForegroundService(Intent(this, LockForegroundService::class.java))
 
+        // Auto-start 1hr lock session on every app open (if not already active)
+        if (!SessionManager.isSessionActive(this)) {
+            sendBroadcast(Intent(LockForegroundService.ACTION_START_LOCK).apply {
+                `package` = packageName
+            })
+        }
+
         // Request POST_NOTIFICATIONS (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
