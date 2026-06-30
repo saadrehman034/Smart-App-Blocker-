@@ -19,7 +19,7 @@ import androidx.core.app.NotificationCompat
 class LockForegroundService : Service() {
 
     companion object {
-        const val CHANNEL_ID = "focuslock_channel"
+        const val CHANNEL_ID = "focuslock_channel_v2"
         const val NOTIF_ID = 1
         const val ACTION_START_LOCK = "com.focuslock.app.ACTION_START_LOCK"
     }
@@ -97,7 +97,7 @@ class LockForegroundService : Service() {
             .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
             .setContentTitle("FocusLock")
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setOnlyAlertOnce(true)
 
         if (active) {
@@ -118,10 +118,13 @@ class LockForegroundService : Service() {
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
-            CHANNEL_ID, "FocusLock Session", NotificationManager.IMPORTANCE_LOW
+            CHANNEL_ID, "FocusLock Session", NotificationManager.IMPORTANCE_MIN
         ).apply {
             description = "Shows lock session status and provides start button"
             setShowBadge(false)
+            setSound(null, null)
+            enableVibration(false)
+            enableLights(false)
         }
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
