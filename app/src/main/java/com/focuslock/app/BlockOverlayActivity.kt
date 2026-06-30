@@ -46,11 +46,11 @@ class BlockOverlayActivity : Activity() {
         })
 
         val pinInput = EditText(this).apply {
-            hint = "4-digit PIN"
+            hint = "6-digit PIN"
             inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             gravity = Gravity.CENTER
             maxLines = 1
-            filters = arrayOf(InputFilter.LengthFilter(4))
+            filters = arrayOf(InputFilter.LengthFilter(6))
         }
         root.addView(pinInput)
 
@@ -73,7 +73,7 @@ class BlockOverlayActivity : Activity() {
 
         unlockBtn.setOnClickListener {
             val pin = pinInput.text.toString()
-            if (pin.length == 4 && PinManager.verifyPin(this, pin)) {
+            if (pin.length == 6 && PinManager.verifyPin(this, pin)) {
                 SessionManager.temporarilyUnlock(blockedPackage)
                 finish()
             } else {

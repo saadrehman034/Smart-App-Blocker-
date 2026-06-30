@@ -38,8 +38,8 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(60, 24, 60, 0)
         }
-        val pin1 = makePin4Field("Enter 4-digit PIN")
-        val pin2 = makePin4Field("Confirm PIN")
+        val pin1 = makePin6Field("Enter 6-digit PIN")
+        val pin2 = makePin6Field("Confirm PIN")
         container.addView(pin1)
         container.addView(pin2)
 
@@ -51,7 +51,7 @@ class MainActivity : Activity() {
             .setPositiveButton("Set PIN") { _, _ ->
                 val p1 = pin1.text.toString()
                 val p2 = pin2.text.toString()
-                if (p1.length == 4 && p1 == p2) {
+                if (p1.length == 6 && p1 == p2) {
                     PinManager.setPin(this, p1)
                     proceedToMain()
                 } else {
@@ -65,7 +65,7 @@ class MainActivity : Activity() {
     // ── PIN verification (subsequent launches) ────────────────────────────────
 
     private fun showPinEntryDialog() {
-        val pinField = makePin4Field("Enter PIN")
+        val pinField = makePin6Field("Enter PIN")
 
         AlertDialog.Builder(this)
             .setTitle("FocusLock")
@@ -202,12 +202,12 @@ class MainActivity : Activity() {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private fun makePin4Field(hint: String) = EditText(this).apply {
+    private fun makePin6Field(hint: String) = EditText(this).apply {
         this.hint = hint
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         maxLines = 1
         gravity = Gravity.CENTER
-        filters = arrayOf(InputFilter.LengthFilter(4))
+        filters = arrayOf(InputFilter.LengthFilter(6))
     }
 
     private fun isAccessibilityEnabled(): Boolean {
